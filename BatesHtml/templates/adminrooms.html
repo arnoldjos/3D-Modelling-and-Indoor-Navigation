@@ -1,0 +1,539 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card bg-faded">
+	<div class="card-header">
+		<nav>
+			<ul class="nav nav-tabs card-header-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-rooms-tab" data-toggle="tab" href="#nav-rooms" role="tab" aria-controls="nav-rooms" aria-selected="true"><h5>Rooms</h5>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-locations-tab" data-toggle="tab" href="#nav-locations" role="tab" aria-controls="nav-locations" aria-selected="true"><h5>Locations</h5>
+					</a>
+				</li>
+			</ul>
+			<!-- Modal for office create-->
+			<div class="modal fade" id="create-room" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<!--Form for creating office -->
+						<form id="create-room-form" method="POST" enctype="multipart/form-data">
+							{{ room_create_form.csrf_token }}
+							<div class="modal-header bg-primary text-white">      	
+								<h5 class="modal-title" id="exampleModalLongTitle">Create Room</h5>
+								<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="container">
+									<div class="row">
+										<div class="form-group col-md-12">
+											{{ room_create_form.room_name.label(class_="float-sm-left") }}
+											{{ room_create_form.room_name(class_="form-control", id="room-name", size=32, required="", **{'data-parsley-length':"[2, 100]"}) }}      				
+										</div>
+										<div class="form-group col-md-12">
+											{{ room_create_form.room_desc.label(class_="float-sm-left") }}
+											{{ room_create_form.room_desc(class_="form-control", id="room-desc", rows="5", required="") }}  				
+										</div>
+										<div class="form-group col-md-12">
+											{{ room_create_form.room_type.label(class_="float-sm-left") }}
+											{{ room_create_form.room_type(class_="custom-select", id="room-type", required="") }}		      				
+										</div>																				
+										<div class="form-group col-md-12">
+											{{ room_create_form.college.label(class_="float-sm-left") }}
+											{{ room_create_form.college(class_="custom-select", id="college", required="") }}		      				
+										</div>      				      			
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<input type="reset" value="Clear" class="btn btn-secondary">
+								{{ room_create_form.submit(class_="btn btn-primary") }}
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- Modal for office edit-->
+			<div class="modal fade" id="edit-room" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<!--Form for creating office -->
+						<form id="edit-room-form" method="POST">
+							{{ room_edit_form.csrf_token }}
+							<div class="modal-header bg-success text-white">      	
+								<h5 class="modal-title" id="exampleModalLongTitle">Edit Room</h5>
+								<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="container">
+									<div class="row">
+										<div class="form-group col-md-12">
+											{{ room_edit_form.room_name.label(class_="float-sm-left") }}
+											{{ room_edit_form.room_name(class_="form-control", id="edit-room-name", size=32, required="", **{'data-parsley-length':"[2, 100]"}) }}      				
+										</div>
+										<div class="form-group col-md-12">
+											{{ room_edit_form.room_desc.label(class_="float-sm-left") }}
+											{{ room_edit_form.room_desc(class_="form-control", id="edit-room-desc", rows="5", required="") }}  				
+										</div>
+										<fieldset disabled>
+											<div class="form-group col-md-12">
+												{{ room_edit_form.room_type.label(class_="float-sm-left") }}
+												{{ room_edit_form.room_type(class_="custom-select", id="edit-room-type", required="") }}		      				
+											</div>
+										</fieldset>										
+										<div class="form-group col-md-12">
+											{{ room_edit_form.college.label(class_="float-sm-left") }}
+											{{ room_edit_form.college(class_="custom-select", id="edit-room-college", required="") }}		      				
+										</div>      				      			
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<input type="reset" value="Clear" class="btn btn-secondary">
+								{{ room_edit_form.submit(class_="btn btn-success") }}
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- Modal for populating location-->
+			<div class="modal fade bd-example-modal-lg" id="location" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div class="modal-dialog modal-lg">
+			    <div class="modal-content">
+						<!--Form for creating office -->
+						<form id="location-form" method="POST">
+							{{ location_form.csrf_token }}
+							<div class="modal-header bg-primary text-white">      	
+								<h5 class="modal-title" id="exampleModalLongTitle">Populate Location</h5>
+								<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="container">
+									<div class="row">
+										<img src="{{ url_for('static', filename='images/bates-0-map.png') }}" id="bates-map" class="mx-auto" width="550px" height="500px" border="0" />
+										<br>								
+										<div class="form-group col-md-12">
+											{{ location_form.location_floor.label(class_="float-sm-left") }}
+											{{ location_form.location_floor(class_="custom-select", id="location-floor", required="") }}      				
+										</div>
+										<div class="form-group col-md-12">
+											{{ location_form.location_name.label(class_="float-sm-left") }}
+											{{ location_form.location_name(class_="custom-select", id="location-name", required="") }}      				
+										</div>
+										<div class="form-group col-md-12">
+											{{ location_form.room_name.label(class_="float-sm-left") }}
+											{{ location_form.room_name(class_="custom-select room-location", id="room-location", required="") }}      				
+										</div>      				      			
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								{{ location_form.submit(class_="btn btn-primary") }}
+							</div>
+						</form>			    	
+			    </div>
+			  </div>
+			</div>								    
+		</nav>
+	</div>
+	<div class="card-body">
+		<div class="tab-content" id="nav-tabContent">	
+			<div class="tab-pane fade show active" id="nav-rooms" role="tabpanel" aria-labelledby="nav-rooms-tab">
+				<!--Create office button -->
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#create-room" style="margin-right:1rem;">
+					Create
+					<i class="fa fa-plus-circle " aria-hidden="true"></i>
+				</button>	
+				<br><br>		
+				<table class="table table-striped table-hover table-bordered responsive nowrap" id="room-table" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Room Name</th>
+							<th>Type</th>
+							<th>Status</th>
+							<th>Edit</th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for room in rooms %}
+							{% if room.is_active %}
+								{% set active = "Active" 	%}
+							{% else %}
+								{% set active= "Inactive" %}
+							{% endif %}						
+							<tr>
+								<td class="room-id">{{ room.id }}</td>
+								<td style="column-width: 600px;">{{ room.room_name }}</td>
+								<td>{{ room.room_type }}</td>
+								<td> {{ active }} </td>
+								<td><button type='button' class='btn btn-outline-secondary edit-room' data-toggle='modal' data-target='#edit-room'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button></td>
+								<td><button type='button' class='btn btn-danger delete-room'><i class='fa fa-trash-o' aria-hidden='true'></i></button></td>
+							</tr>
+						{% endfor %}				
+					</tbody>		
+				</table>	  	
+			</div>
+			<div class="tab-pane fade" id="nav-locations" role="tabpanel" aria-labelledby="nav-locations-tab">
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#location" style="margin-right:1rem;">
+					Populate Location
+					<i class="fa fa-thumb-tack" aria-hidden="true"></i>
+				</button>	
+				<br><br>					
+					<table class="table table-striped table-hover table-bordered responsive nowrap" id="location-table" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th>Location ID</th>
+								<th>Location Name</th>
+								<th style="column-width: 700px;">Room</th>
+								<th>Clear Location</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for location in locations %}
+								<tr>
+									<td class="room-id">{{ location.id }}</td>
+									<td>{{ location.location_name }}</td>
+									{% for room in rooms if room.location.id == location.id%}
+										<td>{{ room.room_name }}</td>
+									{% else %}
+										<td>None</td>
+									{% endfor %}
+									<td style="text-align: center;"><button type='button' class='btn btn-danger clear-location'><i class='fa fa-eraser' aria-hidden='true'></i></button></td>
+								</tr>
+							{% endfor %}				
+						</tbody>		
+				</table>				 
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+//urls
+var settings = {
+	urls: {
+		'createroom': "{{ url_for('crudroom', operation='create') }}",
+		'getroom': "{{ url_for('crudroom', operation='get') }}",
+		'editroom': "{{ url_for('crudroom', operation='edit') }}",
+		'deleteroom': "{{ url_for('crudroom', operation='delete') }}",
+		'getall': "{{ url_for('crudroom', operation='getall') }}",
+		'locationsassign': "{{ url_for('locations', operation='assign') }}",
+		'locationsdelete': "{{ url_for('locations', operation='delete') }}",
+		'bates0map': "{{ url_for('static', filename='images/bates-0-map.png') }}",
+		'bates1map': "{{ url_for('static', filename='images/bates-1-map.png') }}",
+		'bates2map': "{{ url_for('static', filename='images/bates-2-map.png') }}"
+	}
+};
+$(document).ready(function(){
+
+			var $location_tbl = $('#location-table').DataTable({
+				"columns":[
+						{
+							responsivePriority: 1,
+							className: "location-id",
+							"data": "id"
+						},
+						{
+							responsivePriority: 4,
+							"data": "location_name"
+						},
+						{
+							responsivePriority: 3,
+							"data": "room_name"
+						},
+						{
+								responsivePriority: 2,
+								"data": null,
+								"defaultContent": "<td><button type='button' class='btn btn-danger clear-location'> Clear <i class='fa fa-eraser' aria-hidden='true'></i></button></td>"
+						}
+				]					
+		});	
+								
+		var $room_tbl = $('#room-table').DataTable({
+			"scrollX": true,
+			"columns":[
+					{
+							responsivePriority: 1,
+							className: "room-id",
+							"data": "id"
+					},
+					{
+						responsivePriority: 4,
+						"data": "room_name"
+					},
+					{
+						responsivePriority: 6,
+						"data": "room_type"
+					},
+					{
+						responsivePriority: 5,
+						"data": "status"
+					},
+					{
+							responsivePriority: 3,
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-success edit-room' data-toggle='modal' data-target='#edit-room'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>"
+					},
+					{
+							responsivePriority: 2,
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-danger delete-room'><i class='fa fa-trash-o' aria-hidden='true'></i></button>" 
+					}
+				]
+		});
+
+
+  //clear create room form
+  $('#create-room').on('hidden.bs.modal', function (e) {
+      $('#create-room-form').parsley().reset();
+      $('#create-room-form')[0].reset();
+  });
+  //clear location form
+  $('#location').on('hidden.bs.modal', function (e) {
+  		$("#bates-map").attr('src', settings.urls.bates0map);
+      $('#location-form').parsley().reset();
+      $('#location-form')[0].reset();
+  });  
+
+  //clear edit room form
+  $('#edit-room').on('hidden.bs.modal', function (e) {
+      $('#edit-room-form').parsley().reset();
+      $('#edit-room-form')[0].reset();
+  });  
+
+	// validate create room
+	$('#create-room-form').parsley()
+	.on('form:submit', function(e) {
+		$('#create-room').modal('hide');
+		$.post( settings.urls.createroom, $('#create-room-form').serialize(), function(data){  
+				swal("Room", "Has been created", "success")
+						.then((value) =>{
+							$('#room-table').DataTable().row.add({
+									"id" : data.id,
+									"room_name": data.room_name,
+									"room_type": data.room_type,
+									"status": data.status,
+							}).draw();
+							$.get(settings.urls.getall, function(data){
+								$('#room-location').find('option').remove();
+								for (i=0; i < data.length; i++){
+									$("#room-location").append("<option value="+ data[i].id + ">"+data[i].room_name+"</option" );
+								}								
+							},"json");																							
+						});                     
+		}, "json");
+		return false;
+	});
+
+	//vaidate assign location
+	$('#location-form').parsley()
+	.on('form:submit', function(e) {
+		$('#location').modal('hide');
+		var locVal = $('#location-name').val();
+		var roomVal = $('#room-location').val();
+		var location = $('#location-name option[value='+locVal+']');
+		var room = $('#room-location option[value='+roomVal+']');
+		$.post( settings.urls.locationsassign, $('#location-form').serialize(), function(data){  
+				swal("Room", "Has been assigned", "success")
+						.then((value) =>{
+								location.remove();
+								room.remove();
+								var rowData = $('#location-table').DataTable().rows().data();
+							
+								rowData.each(function (value,index){
+									if(value.id == data.location_id){
+										var $data = {
+												"id": data.location_id,
+												"location_name": data.location_name,
+												"room_name": data.room_name,
+										};
+										$('#location-table').DataTable().row(index).data($data).draw();   										
+									}
+								});
+								$room_tbl.rows().eq(0).each(function(idx){
+										if ($room_tbl.row(idx).data().id == parseInt(data.room_id)){
+											var row = $room_tbl.row(idx).node();
+											$(row).addClass("toedit");
+											var $data = {
+												"id": data.room_id,
+												"room_name": data.room_name,
+												"room_type": data.room_type,
+												"status": "Active",
+											};
+											$room_tbl.row(".toedit").data($data).draw();						
+											$(row).removeClass("toedit");
+
+										}	
+								});													 
+						});                     
+		}, "json");
+		return false;
+	});
+
+	// edit room
+	$('#room-table tbody').on( 'click', '.edit-room', function () {
+			var $row = $(this).closest('tr');
+			var $id = $room_tbl.row($row).data().id;
+
+		
+			$.post(settings.urls.getroom, {id: $id}, function(data){
+					$('#edit-room-name:text').val(data.room_name);
+					$('#edit-room-desc').val(data.room_desc);
+					$('#edit-room-type').val(data.room_type);
+					$('#edit-room-college').val(data.college);
+						$('#edit-room-form').parsley()           
+						.on('form:submit', function(e) {
+							$('#edit-room').modal('hide');             
+							var data = $('#edit-room-form').serializeArray();
+							data.push({name:'id', value:$id});
+							$.post(settings.urls.editroom, data, function(data2){
+											swal("Room", "Has been updated", "success")
+													.then((value) =>{
+															$('#edit-room-form').parsley().reset();
+															$('#edit-room-form')[0].reset();
+															var $data = {
+																					"id": $id,
+																					"room_name": data2.room_name,
+																					"room_type": data2.room_type,
+																					"status": data2.status,
+															};
+															$room_tbl.row($row).data($data).draw();
+															if (data2.location_id != 0){
+																$location_tbl.rows().eq(0).each(function(idx){
+																		if ($location_tbl.row(idx).data().id == parseInt(data2.location_id)){
+																			var row = $location_tbl.row(idx).node();
+																			$(row).addClass("toedit");
+																			var $data2 = {
+																				"id": data2.location_id,
+																				"location_name": data2.location_name,
+																				"room_name": data2.room_name,
+																			};
+																			$location_tbl.row(".toedit").data($data2).draw();						
+																			$(row).removeClass("toedit");
+																		}	
+																});																
+															}
+															$("#room-location option[value="+$id+"]").text(data2.room_name);                                          
+													}); 
+							},"json");
+							return false;
+						});           
+			},"json");
+	})
+	.on('click','.delete-room', function(){
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+
+			swal({
+				title: "Delete Room?",
+				text: "Once deleted, you will not be able to recover this file!",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$.post(settings.urls.deleteroom, {id: $id}, function(data){
+							$room_tbl.row($row).remove().draw();
+							if (data.location_id != 0){
+								$location_tbl.rows().eq(0).each(function(idx){
+										if ($location_tbl.row(idx).data().id == parseInt(data.location_id)){
+											var row = $location_tbl.row(idx).node();
+											$(row).addClass("toedit");											
+											var $data2 = {
+													"id": data.location_id,
+													"location_name": data.location_name,
+													"room_name": "None",
+											};
+											$location_tbl.row(".toedit").data($data2).draw();						
+											$(row).removeClass("toedit");											
+										}	
+								});	
+							$("#location-name").prepend("<option value="+ data.location_id + ">"+data.location_name+"</option" );
+							$("#location-name").val($("#location-name option:first").val());  
+							}  
+							swal("Room has been deleted" , {
+								icon: "success",
+							});             
+					});
+				}
+			});
+	});
+
+	$("#location-floor").change(function(){		
+			var val = "";
+			$("#location-floor option:selected").each(function(){
+				val += $(this).val();
+				if (val == "B"){				
+					$("#bates-map").attr('src', settings.urls.bates0map);
+				}
+				else if (val == "G"){
+					$("#bates-map").attr('src', settings.urls.bates1map);
+				}
+				else if (val == "2"){
+					$("#bates-map").attr('src', settings.urls.bates2map);					
+				}
+			});
+	})
+
+	//clear location
+	$('#location-table tbody').on( 'click', '.clear-location', function () {
+		var $row = $(this).closest('tr');
+		var $id = $row.find('td:first').text();
+			swal({
+			  title: "Are you sure?",
+			  text: "Clear Location",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			})
+			.then((willDelete) => {
+			  if (willDelete) {
+					$.post(settings.urls.locationsdelete, {id: $id}, function(data){
+						var $data = {
+												"id": $id,
+												"location_name": data.location_name,
+												"room_name": "None",
+						};
+						$location_tbl.row($row).data($data).draw();
+						if(data.empty == 1){
+							$("#location-name").prepend("<option value="+ data.location_id + ">"+data.location_name+"</option" );
+							$("#room-location").prepend("<option value="+ data.room_id + ">"+data.room_name+"</option" );
+							$("#room-location").val($("#room-location option:first").val());
+							$("#location-name").val($("#location-name option:first").val());
+							$room_tbl.rows().eq(0).each(function(idx){
+									if ($room_tbl.row(idx).data().id == parseInt(data.room_id)){
+										var row = $room_tbl.row(idx).node();
+										$(row).addClass("toedit");
+										var $data2 = {
+											"id": data.room_id,
+											"room_name": data.room_name,
+											"room_type": data.room_type,
+											"status": "Inactive",
+										};
+										$room_tbl.row(".toedit").data($data2).draw();						
+										$(row).removeClass("toedit");
+									}	
+							});							
+						}						
+					},"json");			  	
+			    swal("Location has been cleared", {
+			      icon: "success",
+			    });
+			  }
+			});
+	});
+});
+
+</script>
+{% endblock %}  

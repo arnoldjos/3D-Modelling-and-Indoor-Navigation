@@ -1,0 +1,576 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+		<nav>
+			<ul class="nav nav-tabs card-header-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-services-tab" data-toggle="tab" href="#nav-services" role="tab" aria-controls="nav-colleges" aria-selected="true"><h5>Services</h5>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-step-tab" data-toggle="tab" href="#nav-step" role="tab" aria-controls="nav-step" aria-selected="true"><h5>Steps</h5>
+					</a>
+				</li>				
+			</ul>
+		</nav>
+		<!-- Modal for create service-->
+		<div class="modal fade" id="create-service" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form id="create-service-form" method="POST">
+						{{ service_create_form.csrf_token }}
+						<div class="modal-header bg-primary text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Create Service</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ service_create_form.service_name.label }}
+										{{ service_create_form.service_name(class_="form-control", id="service-name", size=32, required="", **{'data-parsley-length':"[2, 100]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ service_create_form.service_desc.label }}
+										{{ service_create_form.service_desc(class_="form-control", id="service-desc", rows="5", required="") }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ service_create_form.room.label }}
+										{{ service_create_form.room(class_="custom-select", id="room", required="") }}  				
+									</div>																																		
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ service_create_form.submit(class_="btn btn-primary") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal for edit service-->
+		<div class="modal fade" id="edit-service" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form id="edit-service-form" method="POST">
+						{{ service_edit_form.csrf_token }}
+						<div class="modal-header bg-success text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Edit Service</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ service_edit_form.service_name.label }}
+										{{ service_edit_form.service_name(class_="form-control", id="edit-service-name", size=32, required="", **{'data-parsley-length':"[2, 100]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ service_edit_form.service_desc.label }}
+										{{ service_edit_form.service_desc(class_="form-control", id="edit-service-desc", rows="5", required="") }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ service_edit_form.room.label }}
+										{{ service_edit_form.room(class_="custom-select", id="edit-room", required="") }}  				
+									</div>																																		
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ service_edit_form.submit(class_="btn btn-success") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal for create step-->
+		<div class="modal fade" id="create-step" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form id="create-step-form" method="POST">
+						{{ step_create_form.csrf_token }}
+						<div class="modal-header bg-primary text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Create Step</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ step_create_form.service.label }}
+										{{ step_create_form.service(class_="custom-select step-service", id="step-service", required="") }}  	    				
+									</div>									
+									<div class="form-group col-md-12">
+										{{ step_create_form.step_type.label }}
+										{{ step_create_form.step_type(class_="custom-select step-type", id="step-type", required="") }}  	    				
+									</div>
+									<div class="form-group col-md-12">
+										{{ step_create_form.room.label }}
+										{{ step_create_form.room(class_="custom-select step-room", id="step-room", required="", disabled=true) }}  				
+									</div>										
+									<div class="form-group col-md-12">
+										{{ step_create_form.step_desc.label }}
+										{{ step_create_form.step_desc(class_="form-control", id="step-desc", rows="8", required="") }}  				
+									</div>																																	
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ step_create_form.submit(class_="btn btn-primary") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal for edit step-->
+		<div class="modal fade" id="edit-step" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form id="edit-step-form" method="POST">
+						{{ step_edit_form.csrf_token }}
+						<div class="modal-header bg-success text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Edit Step</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ step_edit_form.service.label }}
+										{{ step_edit_form.service(class_="custom-select step-service", id="edit-step-service", required="", disabled=true) }}  	    				
+									</div>
+									<div class="form-group col-md-12">
+										<p>Step</p>
+										<select class="custom-select " id="step-list">
+										</select>	    				
+									</div>																		
+									<div class="form-group col-md-12">
+										{{ step_edit_form.step_type.label }}
+										{{ step_edit_form.step_type(class_="custom-select step-type", id="edit-step-type", required="") }}  	    				
+									</div>
+									<div class="form-group col-md-12">
+										{{ step_edit_form.room.label }}
+										{{ step_edit_form.room(class_="custom-select step-room", id="edit-step-room", required="", disabled=true) }}  				
+									</div>									
+									<div class="form-group col-md-12">
+										{{ step_edit_form.step_desc.label }}
+										{{ step_edit_form.step_desc(class_="form-control", id="edit-step-desc", rows="8", required="") }}  				
+									</div>																																		
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class = "btn btn-danger" id="step-delete" type="button">Delete <i class="fa fa-trash-o" aria-hidden="true"></i></button> 
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ step_edit_form.submit(class_="btn btn-success") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>					
+  </div>
+  <div class="card-body">
+		<div class="tab-content" id="nav-tabContent">	
+			<div class="tab-pane fade show active" id="nav-services" role="tabpanel" aria-labelledby="nav-services-tab">
+				<!-- Button trigger modal -->							
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#create-service" style="margin-right:1rem;">
+				Create  
+				<i class="fa fa-plus-circle " aria-hidden="true"></i>
+				</button>
+				<br><br>  	
+				<table class="table table-striped table-hover table-bordered responsive nowrap" id="service-table" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th> ID </th>
+							<th> Service Name </th>
+							<th> Edit </th>
+							<th> Delete </th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for service in services %}
+					<tr>
+						<td> {{ service.id }} </td>
+						<td> {{ service.service_name }} </td>
+						<td><button type="button" class="btn btn-success edit-service" data-toggle="modal" data-target="#edit-service"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>
+						<td><button type="button" class="btn btn-danger" id="delete-service"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+					</tr>						
+					{% endfor %}
+					</tbody>
+				</table>  	
+			</div>
+			<div class="tab-pane fade show" id="nav-step" role="tabpanel" aria-labelledby="nav-step-tab">
+				<!-- Button trigger modal -->							
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#create-step" style="margin-right:1rem;">
+				Create  
+				<i class="fa fa-plus-circle " aria-hidden="true"></i>
+				</button>
+				<br><br>  	
+				<table class="table table-striped table-hover table-bordered responsive nowrap" id="step-table" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th> ID </th>
+							<th> Service Name </th>
+							<th> Steps </th>
+							<th> View Steps </th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for step in steps %}
+					<tr>
+						<td> {{ step.service.id }} </td>
+						<td> {{ step.service.service_name }} </td>
+						<td> {{ step.count }} </td>
+						<td><button type="button" class="btn btn-success edit-step" data-toggle="modal" data-target="#edit-step"><i class="fa fa-eye" aria-hidden="true"></i></button></td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>  	
+			</div>			
+		</div>	  	
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+
+	var settings = {
+		urls: {
+			'createservice': "{{ url_for('adminservices', operation='createservice') }}",
+			'getservice': "{{ url_for('adminservices', operation='getservice') }}",
+			'editservice': "{{ url_for('adminservices', operation='editservice') }}",
+			'deleteservice': "{{ url_for('adminservices', operation='deleteservice') }}",
+			'createstep': "{{ url_for('adminservices', operation='createstep') }}",
+			'getallsteps': "{{ url_for('adminservices', operation='getallsteps') }}",
+			'getstep': "{{ url_for('adminservices', operation='getstep') }}",
+			'editstep': "{{ url_for('adminservices', operation='editstep') }}",
+			'deletestep': "{{ url_for('adminservices', operation='deletestep') }}"			
+		}
+	};
+
+	var service_tbl = $('#service-table').DataTable({
+		responsive: true,
+			"columns":[
+					{
+							className: "service-id",
+							"data": "id"
+					},
+					{"data": "service_name"},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-success edit-service' data-toggle='modal' data-target='#edit-service'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>"
+					},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-danger delete-service'><i class='fa fa-trash-o' aria-hidden='true'></i></button>" 
+					}
+			]
+	});
+
+	var step_tbl = $('#step-table').DataTable({
+		responsive: true,
+			"columns":[
+					{
+							className: "service-id",
+							"data": "id"
+					},
+					{"data": "service_name"},
+					{"data": "steps"},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-success edit-step' data-toggle='modal' data-target='#edit-step'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>"
+					}
+			]
+	});
+
+	//clear create service
+	$('#create-service').on('hidden.bs.modal', function (e) {
+			$('#create-service-form').parsley().reset();
+			$('#create-service-form')[0].reset();
+	});
+
+	//clear edit service
+	$('#edit-service').on('hidden.bs.modal', function (e) {
+			$('#edit-service-form').parsley().reset();
+			$('#edit-service-form')[0].reset();
+	});	
+
+	//clear create step
+	$('#create-step').on('hidden.bs.modal', function (e) {
+			$('#create-step-form').parsley().reset();
+			$('#create-step-form')[0].reset();
+	});
+
+	//clear edit step
+	$('#edit-step').on('hidden.bs.modal', function (e) {
+			$('#edit-step-form').parsley().reset();
+			$('#edit-step-form')[0].reset();
+	});
+
+
+	//validate create service form
+	$('#create-service-form').parsley()
+	.on('form:submit', function(e) {
+		$('#create-service').modal('hide');   
+		$.post( settings.urls.createservice, $('#create-service-form').serialize(), function(data){  
+				swal("Service", "Has been created", "success")
+						.then((value) =>{
+								$('#service-table').DataTable().row.add({
+										"id" : data.id,
+										"service_name": data.service_name,
+								}).draw();
+								$(".step-service").append("<option value="+ data.id + ">"+data.service_name+"</option" );
+						});                     
+		}, "json");
+		return false;
+	});
+
+	// edit service
+	$('#service-table tbody').on( 'click', '.edit-service', function () {
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+			$.post(settings.urls.getservice, {id: $id}, function(data){	
+					$('#edit-service-name').val(data.service_name);
+					$('#edit-service-desc').val(data.service_desc);
+					$('#edit-service-room').val(data.room);
+						$('#edit-service-form').parsley()           
+						.on('form:submit', function(e) {
+							$('#edit-service').modal('hide');             
+							var data = $('#edit-service-form').serializeArray();
+							data.push({name:'id', value:$id});
+							$.post(settings.urls.editservice, data, function(data2){
+											swal("Service", "Has been updated", "success")
+													.then((value) =>{
+															$('#edit-service-form').parsley().reset();
+															$('#edit-service-form')[0].reset();
+															var $data = {
+																					"id": data2.id,
+																					"service_name": data2.service_name,
+															};
+															service_tbl.row($row).data($data).draw();
+															step_tbl.rows().eq(0).each(function(idx){
+																	if (step_tbl.row(idx).data().id == parseInt(data2.id)){											
+																		var row = step_tbl.row(idx).node();
+																		$(row).addClass("toedit");											
+																		var $data = {
+																				"id": data2.id,
+																				"service_name": data2.service_name,
+																				"steps": step_tbl.row(idx).data().steps,
+																		};
+																		step_tbl.row(".toedit").data($data).draw();						
+																		$(row).removeClass("toedit");
+																	}
+															});																
+															$(".step-service option[value="+data2.id+"]").text(data2.service_name);                                          
+													}); 
+							},"json");
+							return false;
+						});           
+			},"json");
+	})
+	.on('click','.delete-service', function(){
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+
+			swal({
+				title: "Delete Service?",
+				text: "Once deleted, you will not be able to recover this file!",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$.post(settings.urls.deleteservice, {id: $id}, function(data){
+							service_tbl.row($row).remove().draw();
+							step_tbl.rows().eq(0).each(function(idx){
+									if (step_tbl.row(idx).data().college == data.id){
+										var row = step_tbl.row(idx).node();
+										$(row).addClass("todelete");	
+									}	
+							});
+							step_tbl.rows('.todelete').remove().draw();
+							$(".step-service option[value="+$id+"]").remove();														
+							swal("Service Deleted" , {
+								icon: "success",
+							});             
+					},"json");
+				}
+			});
+	});
+
+	//step type
+	$("#step-type").change(function(){		
+			var val = "";
+			$("#step-type option:selected").each(function(){
+				val += $(this).val();
+				if (val == "Instruction"){								
+					$('#step-room').prop('disabled', 'disabled');
+				}
+				else if (val == "Direction"){
+					$('#step-room').prop('disabled', false);
+				}
+			});
+	})
+
+
+
+	// edit step type
+	$("#edit-step-type").change(function(){		
+			var val = "";
+			$("#edit-step-type option:selected").each(function(){
+				val += $(this).val();
+				if (val == "Instruction"){								
+					$('#edit-step-room').prop('disabled', 'disabled');
+				}
+				else if (val == "Direction"){
+					$('#edit-step-room').prop('disabled', false);
+				}
+			});
+	})
+
+
+	//validate create step form
+	$('#create-step-form').parsley()
+	.on('form:submit', function(e) {
+		$('#create-step').modal('hide');   
+		$.post(settings.urls.createstep, $('#create-step-form').serialize(), function(data){  
+				swal("Step", "Has been created", "success")
+						.then((value) =>{
+								if(data.is_new == 0){
+									step_tbl.rows().eq(0).each(function(idx){
+											if (step_tbl.row(idx).data().id == parseInt(data.id)){											
+												var row = step_tbl.row(idx).node();
+												$(row).addClass("toedit");											
+												var $data = {
+														"id": step_tbl.row(idx).data().id,
+														"service_name": step_tbl.row(idx).data().service_name,
+														"steps": parseInt(step_tbl.row(idx).data().steps)+1,
+												};
+												step_tbl.row(".toedit").data($data).draw();						
+												$(row).removeClass("toedit");
+											}
+									});	
+								}
+								else if (data.is_new == 1){
+											$('#step-table').DataTable().row.add({
+													"id": data.id,
+													"service_name":data.service_name,
+													"steps": 1,
+											}).draw();																		
+								}
+						});                     
+		}, "json");
+		return false;
+	});
+
+	// edit steps
+	$('#step-table tbody').on( 'click', '.edit-step', function () {
+			var $row = $(this).closest('tr');
+			var $id = step_tbl.row($row).data().id;
+			$.post(settings.urls.getallsteps, {id: $id}, function(data){
+					var stepList = data.steps;
+					$('#step-list').find('option').remove().end();
+						for (i = 0; i < stepList.length; i++){
+							$('#step-list').append("<option value="+stepList[i].step_id+">"+stepList[i].step_number+"</option>");
+						}
+						$('#edit-step-service').val(stepList[0].service_id);
+						$('#edit-step-type').val(stepList[0].step_type);
+						$('#edit-step-desc').val(stepList[0].step_desc);
+						if(stepList[0].room != 0){
+							$('#edit-step-room').val(stepList[0].room);
+							$('#edit-step-room').prop('disabled',false);
+						} 
+						$('#edit-step-form').parsley()        
+						.on('form:submit', function(e) {
+							$('#edit-step').modal('hide');             
+							var data = $('#edit-step-form').serializeArray();
+							var selectId = $('#step-list').val();
+							data.push({name:'id', value:selectId});
+							$.post(settings.urls.editstep, data, function(data2){
+											swal("Step", "Has been updated", "success")
+													.then((value) =>{
+															$('#edit-step-form').parsley().reset();
+															$('#edit-step-form')[0].reset();															                                          
+													}); 
+							},"json");
+							return false;
+						});           
+			},"json");
+	});
+
+	// steps selection change values
+	$('#step-list').change(function(){
+		var $id = $('#step-list').val();
+			$.post(settings.urls.getstep, {id:$id}, function(data){
+				$('#edit-step-service').val(data.service_id);
+				$('#edit-step-type').val(data.step_type);
+				$('#edit-step-desc').val(data.step_desc);	
+				if(data.room != 0){
+					$('#edit-step-room').val(data.room);
+					$('#edit-step-room').prop('disabled',false);
+				} 			
+			});
+	})
+
+	//delete step
+	$('#step-delete').click(function(){
+		swal({
+		  title: "Delete Step?",
+		  text: "Once deleted, you will not be able to recover this imaginary file!",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+				$('#edit-step-service').prop('disabled', false);		  	
+		  	var data = $('#edit-step-form').serializeArray();
+				var selectId = $('#step-list').val();
+				data.push({name:'id', value:selectId});				
+				$.post(settings.urls.deletestep, data, function(data){
+					$('#edit-step').modal('hide');
+					step_tbl.rows().eq(0).each(function(idx){
+							if (step_tbl.row(idx).data().id == parseInt(data.service_id)){
+								if (data.step_count > 1){											
+									var row = step_tbl.row(idx).node();
+									$(row).addClass("toedit");											
+									var $data = {
+											"id": step_tbl.row(idx).data().id,
+											"service_name": step_tbl.row(idx).data().service_name,
+											"steps": data.step_count,
+									};
+									step_tbl.row(".toedit").data($data).draw();						
+									$(row).removeClass("toedit");
+								}
+								else{
+									step_tbl.row(idx).remove().draw();
+								}
+							}
+					});							
+				},"json");
+				$('#edit-step-service').prop('disabled', 'disabled');			
+		    swal("Step has been deleted", {
+		      icon: "success",
+		    });
+		  }
+		});			
+	});
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card bg-faded">
+  <div class="card-header">
+    Featured
+  </div>
+  <div class="card-body">
+  	<div class="row mx-auto">
+  		<canvas id="line-chart" height="400" width="400"></canvas>
+  	</div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+	var ctx = $("#line-chart")
+
+	var score = 50;
+	var data = {
+			labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+			datasets: [
+					{
+						label: "Views",
+						data: {{ days }},
+						backgroundColor: "lightblue",
+						borderColor: "blue",
+						fill: true,
+						lineTension: 0,
+						pointRadius: 5
+					}
+			]
+	}
+
+	var options = {
+			title:{
+					display: true,
+					fontSize: 18,
+					fontColor: "#333"
+			},
+			legend: {
+					display: true,
+					position: "top"
+			}
+	}
+
+	var chart = new Chart(ctx, {
+
+			type: "line",
+			data: data,
+			options: options
+
+	});
+});
+</script>
+{% endblock %}

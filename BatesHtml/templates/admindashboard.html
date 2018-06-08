@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h3>Overview</h3>
+  </div>
+  <div class="card-body row">
+  	<div class="col-md-4">
+  		<div class="card text-white bg-success mb-3">
+  			<div class="card-body">
+				<h2><i class="fa fa-building-o" aria-hidden="true"></i> {{ room_count }}</h2>
+				<h3>Rooms</h3>						  				
+  			</div>
+    	</div>
+    </div>
+  	<div class="col-md-4">
+  		<div class="card text-white bg-danger mb-3">
+  			<div class="card-body">
+				<h2><i class="fa fa-users" aria-hidden="true"></i> {{ personnel_count }}</h2>
+				<h3>Personnel</h3>						  				
+  			</div>
+    	</div>
+    </div>
+  	<div class="col-md-4">
+  		<div class="card text-white bg-info mb-3">
+  			<div class="card-body">
+				<h2><i class="fa fa-bar-chart" aria-hidden="true"></i> {{ views }}</h2>
+				<h3>Views</h3>						  				
+  			</div>
+    	</div>
+    </div>
+  </div>
+</div>
+<br>
+<div class="card bg-faded" id="Graph">
+  <div class="card-body">
+      <ul class="nav nav-pills mb-3" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active"  id="weekly" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="false">Weekly</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"  id="monthly" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Monthly</a>
+        </li>
+      </ul>     
+    <div style>
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+</div>
+<br><br>
+<div class="row">
+  <div class="col-lg-6 mt-md-5">
+    <div class="list-group">
+      <button type="button" class="list-group-item list-group-item-action active">
+        <h5>Frequency of Visited Sites</h5>
+      </button>
+      {% for room in freq_rooms %}
+      <button type="button" class="list-group-item list-group-item-action mx-auto">
+        <h6>{{ room.room_report.room_name }}<span class="badge badge-primary float-right">{{ room.count }}</span></h6>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-lg-6 mt-md-5">
+    <div class="list-group">
+      <button type="button" class="list-group-item list-group-item-action active">
+        <h5>Frequency of Visited Services</h5>
+      </button>
+      {% for service in freq_services %}
+      <button type="button" class="list-group-item list-group-item-action mx-auto">
+        <h6>{{ service.service_report.service_name }}<span class="badge badge-primary float-right">{{ service.count }}</span></h6>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<br><br>
+<div class="card bg-faded">
+  <div class="card-header bg-primary text-white">
+    <h5>Latest Views</h5>
+  </div>
+  <div class="card-body">
+  	<table class="table-striped table-hover col-md-12">
+  		<thead>
+  			<tr class="row">
+  				<th class="col-md-7"> Room Name</th>
+  				<th class="col-md-5"> Date Viewed</th>
+  			</tr>
+  		</thead>
+  		<tbody>
+  			{% for view in latest_views %}
+  			<tr class="row">
+  				<td class="col-md-7"> {{ view.room_report.room_name }}</td>
+  				<td class="col-md-5"> {{ view.report_date }}</td>
+  			</tr>
+  			{% endfor %}
+  		</tbody>
+  	</table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+  var settings = {
+    urls: {
+      'weekly': "{{ url_for('graphdata', operation='weekly') }}",
+      'monthly': "{{ url_for('graphdata', operation='monthly') }}",   
+    }
+  };
+
+  var ctx = $("#chart")
+  var chart;
+
+  $.get(settings.urls.weekly, function(data){
+    var myData = {
+        labels: data.labels,
+        datasets: [
+            {
+              label: "Rooms Visited",
+              data: data.days,
+              backgroundColor: "lightblue",
+              borderColor: "blue",
+              fillColor: "blue",
+              fill: false,
+              lineTension: .5,
+              pointRadius: 5
+            },
+            {
+              label: "Services Visited",
+              data: data.services,
+              fillColor: "pink",
+              borderColor: "red",
+              fill: false,
+              lineTension: .5,
+              pointRadius: 5
+            }
+        ]
+    }
+    var options = {
+        title:{
+            display: true,
+            fontSize: 18,
+            fontColor: "#333"
+        },
+        legend: {
+            display: true,
+            position: "top"
+        }
+    }
+    chart = new Chart(ctx, {
+        type: "line",
+        data: myData,
+        options: options,
+    });
+  }, "json");
+
+  $("#weekly").click(function(){
+    console.log("asd");
+    $.get(settings.urls.weekly, function(data){
+        chart.data.datasets[0].data = data.days;
+        chart.data.labels = data.labels;
+        chart.update();
+    },"json");
+  })
+
+  $("#monthly").click(function(){
+    $.get(settings.urls.monthly, function(data){
+        chart.data.datasets[0].data = data.months;
+        chart.data.labels = data.labels;
+        chart.update();
+    },"json");
+  })
+
+
+});
+</script>
+{% endblock %}

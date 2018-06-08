@@ -1,0 +1,507 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+		<nav>
+			<ul class="nav nav-tabs card-header-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-colleges-tab" data-toggle="tab" href="#nav-colleges" role="tab" aria-controls="nav-colleges" aria-selected="true"><h5>Colleges</h5>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="nav-programs-tab" data-toggle="tab" href="#nav-programs" role="tab" aria-controls="nav-programs" aria-selected="true"><h5>Programs</h5>
+					</a>
+				</li>				
+			</ul>
+		</nav>
+		<!-- Modal for create college-->
+		<div class="modal fade" id="create-college" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<form id="create-college-form" method="POST">
+						{{ college_create_form.csrf_token }}
+						<div class="modal-header bg-primary text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Create College</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ college_create_form.college_name.label }}
+										{{ college_create_form.college_name(class_="form-control", id="college-name", size=32, required="", **{'data-parsley-length':"[2, 100]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_create_form.population.label }}
+										{{ college_create_form.population(class_="form-control", id="population", size=32, required="", **{'data-parsley-type':"integer"}) }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_create_form.vision.label }}
+										{{ college_create_form.vision(class_="form-control",id="vision", rows="5", required="") }}	      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_create_form.mission.label }}
+										{{ college_create_form.mission(class_="form-control",id="mission", rows="5", required="") }}	      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_create_form.goal.label }}
+										{{ college_create_form.goal(class_="form-control",id="goal", rows="5", required="") }}	      				
+									</div>																										
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ college_create_form.submit(class_="btn btn-primary") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal for edit college-->
+		<div class="modal fade" id="edit-college" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<form id="edit-college-form" method="POST">
+						{{ college_edit_form.csrf_token }}
+						<div class="modal-header bg-success text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Edit College</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ college_edit_form.college_name.label }}
+										{{ college_edit_form.college_name(class_="form-control", id="edit-college-name", size=32, required="", **{'data-parsley-length':"[5,100]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_edit_form.population.label }}
+										{{ college_edit_form.population(class_="form-control", id="edit-population", size=32, required="", **{'data-parsley-type':"integer"}) }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_edit_form.vision.label }}
+										{{ college_edit_form.vision(class_="form-control",id="edit-vision", rows="5", required="") }}	      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_edit_form.mission.label }}
+										{{ college_edit_form.mission(class_="form-control",id="edit-mission", rows="5", required="") }}	      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ college_edit_form.goal.label }}
+										{{ college_edit_form.goal(class_="form-control",id="edit-goal", rows="5", required="") }}	      				
+									</div>																										
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ college_edit_form.submit(class_="btn btn-success") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>	
+		<!-- Modal for create program-->
+		<div class="modal fade" id="create-program" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<form id="create-program-form" method="POST">
+						{{ program_create_form.csrf_token }}
+						<div class="modal-header bg-primary text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Create Program</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ program_create_form.program_name.label }}
+										{{ program_create_form.program_name(class_="form-control", id="program-name", size=32, required="", **{'data-parsley-length':"[2,100]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ program_create_form.program_years.label }}
+										{{ program_create_form.program_years(class_="custom-select", id="program-years", required="") }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ program_create_form.department.label(class_="float-sm-left") }}
+										{{ program_create_form.department(class_="custom-select program-college", id="program-college", required="") }}		      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ program_create_form.college.label(class_="float-sm-left") }}
+										{{ program_create_form.college(class_="custom-select program-college", id="program-college", required="") }}		      				
+									</div> 																									
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ program_create_form.submit(class_="btn btn-primary") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal for edit program-->
+		<div class="modal fade" id="edit-program" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<form id="edit-program-form" method="POST">
+						{{ program_edit_form.csrf_token }}
+						<div class="modal-header bg-success">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Create Program</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ program_edit_form.program_name.label }}
+										{{ program_edit_form.program_name(class_="form-control", id="edit-program-name", size=32, required="", **{'data-parsley-length':"[2,100]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ program_edit_form.program_years.label }}
+										{{ program_edit_form.program_years(class_="custom-select", id="program-years", required="") }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ program_edit_form.department.label(class_="float-sm-left") }}
+										{{ program_edit_form.department(class_="custom-select program-college", id="program-college", required="") }}		      				
+									</div>									
+									<div class="form-group col-md-12">
+										{{ program_edit_form.college.label(class_="float-sm-left") }}
+										{{ program_edit_form.college(class_="custom-select program-college", id="edit-program-college", required="") }}		      				
+									</div> 																									
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ program_edit_form.submit(class_="btn btn-success") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>							
+  </div>
+  <div class="card-body">
+		<div class="tab-content" id="nav-tabContent">	
+			<div class="tab-pane fade show active" id="nav-colleges" role="tabpanel" aria-labelledby="nav-colleges-tab">
+				<!-- Button trigger modal -->							
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#create-college" style="margin-right:1rem;">
+				Create  
+				<i class="fa fa-plus-circle " aria-hidden="true"></i>
+				</button>
+				<br><br>  	
+				<table class="table table-striped table-hover table-bordered responsive nowrap" id="college-table" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th> ID </th>
+							<th> College Name </th>
+							<th> Population </th>
+							<th> Edit </th>
+							<th> Delete </th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for college in colleges %}
+							<tr>
+								<td id="college-id">{{ college.id }}</td>
+								<td>{{ college.college_name }}</td>
+								<td>{{ college.population }}</td>
+								<td><button type="button" class="btn btn-success edit-college" data-toggle="modal" data-target="#edit-college"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>
+								<td><button type="button" class="btn btn-danger" id="delete-college"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>  	
+			</div>
+			<div class="tab-pane fade show" id="nav-programs" role="tabpanel" aria-labelledby="nav-colleges-tab">
+				<!-- Button trigger modal -->							
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#create-program" style="margin-right:1rem;">
+				Create  
+				<i class="fa fa-plus-circle " aria-hidden="true"></i>
+				</button>
+				<br><br>
+				<div class="table-scroll">
+					<table class="table table-striped table-hover table-bordered responsive nowrap" id="program-table" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th> ID </th>
+								<th> Program Name </th>
+								<th> Years </th>
+								<th> College </th>
+								<th> Edit </th>
+								<th> Delete </th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for program in programs %}
+								<tr>
+									<td id="college-id">{{ program.id }}</td>
+									<td>{{ program.program_name }}</td>
+									<td>{{ program.program_years }}</td>
+									<td>{{ program.college.college_name }}</td>
+									<td><button type="button" class="btn btn-success edit-program" data-toggle="modal" data-target="#edit-program"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>
+									<td><button type="button" class="btn btn-danger" id="delete-program"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>  	
+			</div>			
+		</div>	  	
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+	var settings = {
+		urls: {
+			'createcollege': "{{ url_for('admincolleges', operation='create') }}",
+			'getcollege': "{{ url_for('admincolleges', operation='get') }}",
+			'editcollege': "{{ url_for('admincolleges', operation='edit') }}",
+			'deletecollege': "{{ url_for('admincolleges', operation='delete') }}",
+			'createprogram': "{{ url_for('adminprograms', operation='create') }}",
+			'getprogram': "{{ url_for('adminprograms', operation='get') }}",
+			'editprogram': "{{ url_for('adminprograms', operation='edit') }}",
+			'deleteprogram': "{{ url_for('adminprograms', operation='delete') }}"			
+		}
+	};
+
+	var college_tbl = $('#college-table').DataTable({
+			"scrollX": true,
+			"columns":[
+					{
+							className: "college-id",
+							"data": "id"
+					},
+					{"data": "college_name"},
+					{"data": "population"},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-success edit-college' data-toggle='modal' data-target='#edit-college'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>"
+					},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-danger delete-college'><i class='fa fa-trash-o' aria-hidden='true'></i></button>" 
+					}
+			]
+	});
+
+	var program_tbl = $('#program-table').DataTable({
+				"columns":[
+						{
+								className: "program-id",
+								"data": "id"
+						},
+						{
+							width: '50px',
+							"data": "program_name"
+						},
+						{"data": "program_years"},
+						{"data": "college"},
+						{
+								"data": null,
+								"defaultContent": "<button type='button' class='btn btn-success edit-program' data-toggle='modal' data-target='#edit-program'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>"
+						},
+						{
+								"data": null,
+								"defaultContent": "<button type='button' class='btn btn-danger delete-program'><i class='fa fa-trash-o' aria-hidden='true'></i></button>" 
+						}
+				]
+		});
+
+	jQuery('.dataTable').wrap('<div class="table-scroll" />');
+
+	//clear create college
+	$('#create-college').on('hidden.bs.modal', function (e) {
+			$('#create-college-form').parsley().reset();
+			$('#create-college-form')[0].reset();
+	});
+
+	//clear editcollege
+	$('#edit-college').on('hidden.bs.modal', function (e) {
+			$('#edit-college-form').parsley().reset();
+			$('#edit-college-form')[0].reset();
+	});
+	//clear create program
+	$('#create-program').on('hidden.bs.modal', function (e) {
+			$('#create-program-form').parsley().reset();
+			$('#create-program-form')[0].reset();
+	});
+
+	//clear edit program
+	$('#edit-program').on('hidden.bs.modal', function (e) {
+			$('#edit-program-form').parsley().reset();
+			$('#edit-program-form')[0].reset();
+	});		
+
+		// validate create college
+	$('#create-college-form').parsley()
+	.on('form:submit', function(e) {
+		$('#create-college').modal('hide');   
+		$.post( settings.urls.createcollege, $('#create-college-form').serialize(), function(data){  
+				swal("College", "Has been created", "success")
+						.then((value) =>{
+								$('#college-table').DataTable().row.add({
+										"id" : data.id,
+										"college_name": data.college_name,
+										"population": data.population
+								}).draw();
+								$(".program-college").append("<option value="+ data.id + ">"+data.college_name+"</option" );
+						});                     
+		}, "json");
+		return false;
+	});
+
+		// validate create program
+	$('#create-program-form').parsley()
+	.on('form:submit', function(e) {
+		$('#create-program').modal('hide');   
+		$.post( settings.urls.createprogram, $('#create-program-form').serialize(), function(data){  
+				swal("Program", "Has been created", "success")
+						.then((value) =>{
+								$('#program-table').DataTable().row.add({
+										"id" : data.id,
+										"program_name": data.program_name,
+										"program_years": data.program_years,
+										"college": data.college
+								}).draw();
+						});                     
+		}, "json");
+		return false;
+	});	
+
+	// edit college
+	$('#college-table tbody').on( 'click', '.edit-college', function () {
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+		
+			$.post(settings.urls.getcollege, {id: $id}, function(data){	
+					$('#edit-college-name').val(data.college_name);
+					$('#edit-population').val(data.population);
+					$('#edit-vision').val(data.vision);
+					$('#edit-mission').val(data.mission);
+					$('#edit-goal').val(data.goal);
+						$('#edit-college-form').parsley()           
+						.on('form:submit', function(e) {
+									$('#edit-college').modal('hide');             
+							var data = $('#edit-college-form').serializeArray();
+							data.push({name:'id', value:$id});
+							$.post(settings.urls.editcollege, data, function(data2){
+											swal("College", "Has been updated", "success")
+													.then((value) =>{
+															$('#edit-college-form').parsley().reset();
+															$('#edit-college-form')[0].reset();
+															var $data = {
+																					"id": $id,
+																					"college_name": data2.college_name,
+																					"population": data2.population
+															};
+															college_tbl.row($row).data($data).draw();
+															$(".program-college option[value="+$id+"]").text(data2.college_name);                                          
+													}); 
+							},"json");
+							return false;
+						});           
+			},"json");
+	})
+	.on('click','.delete-college', function(){
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+
+			swal({
+				title: "Delete College?",
+				text: "Once deleted, you will not be able to recover this file!",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$.post(settings.urls.deletecollege, {id: $id}, function(data){
+							college_tbl.row($row).remove().draw();
+							program_tbl.rows().eq(0).each(function(idx){
+									if (program_tbl.row(idx).data().college == data.college_name){
+										var row = program_tbl.row(idx).node();
+										$(row).addClass("todelete");	
+									}	
+							});
+							program_tbl.rows('.todelete').remove().draw();
+							$(".program-college option[value="+data.college_id+"]").remove();														
+							swal("College Deleted" , {
+								icon: "success",
+							});             
+					},"json");
+				}
+			});
+	});	
+
+	// edit program
+	$('#program-table tbody').on( 'click', '.edit-program', function () {
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+		
+			$.post(settings.urls.getprogram, {id: $id}, function(data){	
+					$('#edit-program-name').val(data.program_name);
+					$('#edit-program-years').val(data.program_years);
+					$('#edit-program-college').val(data.college);
+						$('#edit-program-form').parsley()           
+						.on('form:submit', function(e) {
+									$('#edit-program').modal('hide');             
+							var data = $('#edit-program-form').serializeArray();
+							data.push({name:'id', value:$id});
+							$.post(settings.urls.editprogram, data, function(data2){
+											swal("Program", "Has been updated", "success")
+													.then((value) =>{
+															$('#edit-program-form').parsley().reset();
+															$('#edit-program-form')[0].reset();
+															var $data = {
+																					"id": $id,
+																					"program_name": data2.program_name,
+																					"program_years": data2.program_years,
+																					"college": data2.college
+															};
+															program_tbl.row($row).data($data).draw();                                          
+													}); 
+							},"json");
+							return false;
+						});           
+			},"json");
+	})
+	.on('click','.delete-program', function(){
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+
+			swal({
+				title: "Delete Program?",
+				text: "Once deleted, you will not be able to recover this file!",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$.post(settings.urls.deleteprogram, {id: $id}, function(data){
+							program_tbl.row($row).remove().draw();
+							swal(data , {
+								icon: "success",
+							});             
+					});
+				}
+			});
+	});	
+
+});	
+</script>
+{% endblock %}

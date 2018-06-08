@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card bg-faded">
+	<div class="card-header">
+		<nav>
+			<ul class="nav nav-tabs card-header-tabs">
+				<li class="nav-item">
+					<a class="nav-link active" id="nav-offices-tab" data-toggle="tab" href="#nav-offices" role="tab" aria-controls="nav-offices" aria-selected="true"><h5>Personnel</h5>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<!-- Modal for create-->
+		<div class="modal fade" id="create-personnel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form id="create-form" method="POST">
+						{{ createform.csrf_token }}
+						<div class="modal-header bg-primary text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Create Personnel</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ createform.first_name.label }}
+										{{ createform.first_name(class_="form-control", id="first-name", size=32, required="", **{'data-parsley-length':"[2, 50]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ createform.last_name.label }}
+										{{ createform.last_name(class_="form-control", id="last-name", size=32, required="", **{'data-parsley-length':"[2, 50]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ createform.job_position.label }}
+										{{ createform.job_position(class_="form-control",id="job-position", size=32, required="", **{'data-parsley-length':"[2, 50]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}	      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ createform.assigned_office.label}}
+										{{ createform.assigned_office(class_="custom-select", id="assigned-office", required="") }}			
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ createform.submit(class_="btn btn-primary") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Modal for edit-->		
+		<div class="modal fade" id="edit-personnel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<form id="edit-form" method="POST">
+						{{ editform.csrf_token }}
+						<div class="modal-header bg-success text-white">      	
+							<h5 class="modal-title" id="exampleModalLongTitle">Edit Personnel</h5>
+							<button type="reset" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container">
+								<div class="row">
+									<div class="form-group col-md-12">
+										{{ editform.first_name.label }}
+										{{ editform.first_name(class_="form-control", id="edit-first-name", size=32, required="", **{'data-parsley-length':"[2, 25]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/" }) }}      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ editform.last_name.label }}
+										{{ editform.last_name(class_="form-control", id="edit-last-name", size=32, required="", **{'data-parsley-length':"[2, 25]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}  				
+									</div>
+									<div class="form-group col-md-12">
+										{{ editform.job_position.label }}
+										{{ editform.job_position(class_="form-control",id="edit-job-position", size=32, required="", **{'data-parsley-length':"[2, 25]", 'data-parsley-pattern': "/^[a-zA-Z\s]*$/"}) }}	      				
+									</div>
+									<div class="form-group col-md-12">
+										{{ editform.assigned_office.label }}
+										{{ editform.assigned_office(class_="custom-select", id="edit-assigned-office", required="") }} 
+									</div>      				      			
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="reset" value="Clear" class="btn btn-secondary">
+							{{ editform.submit(class_="btn btn-success") }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>		
+	</div>
+	<div class="card-body">
+		<div class="tab-content" id="nav-tabContent">	
+			<div class="tab-pane fade show active" id="nav-offices" role="tabpanel" aria-labelledby="nav-offices-tab">
+				<!-- Button trigger modal -->							
+				<button type="button" class="btn btn-primary float-sm-right" data-toggle="modal" data-target="#create-personnel" style="margin-right:1rem;">
+				Create  
+				<i class="fa fa-plus-circle " aria-hidden="true"></i>
+				</button>
+				<br><br>  	
+				<table class="table table-striped table-hover table-bordered responsive nowrap" id="person-table" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th> ID </th>
+							<th> First Name </th>
+							<th> Last Name </th>
+							<th> Assigned Office </th>
+							<th> Edit </th>
+							<th> Delete </th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for person in personnel %}
+							<tr>
+								<td id="person-id">{{ person.id }}</td>
+								<td>{{ person.first_name }}</td>
+								<td>{{ person.last_name }}</td>
+								<td>{{ person.assigned_office.room_name }}</td>
+								<td><button type="button" class="btn btn-success edit-person" data-toggle="modal" data-target="#edit-personnel"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>
+								<td><button type="button" class="btn btn-danger" id="delete-person"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>  	
+			</div>
+		</div>		
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+
+
+<script type="text/javascript">
+//urls
+var settings = {
+	urls: {
+		'createperson': "{{ url_for('adminpersonnel', operation='create') }}",
+		'getperson': "{{ url_for('adminpersonnel', operation='get') }}",
+		'editperson': "{{ url_for('adminpersonnel', operation='edit') }}",
+		'deleteperson': "{{ url_for('adminpersonnel', operation='delete') }}"
+	}
+};
+
+// setup table columns
+$(document).ready(function () {
+	// datatable settings
+	var table = $('#person-table').DataTable({
+		responsive: true,
+			"columns":[
+					{
+							className: "person-id",
+							"data": "id"
+					},
+					{"data": "first_name"},
+					{"data": "last_name"},
+					{"data": "assigned_office"},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-success edit-person' data-toggle='modal' data-target='#edit-personnel'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></button>"
+					},
+					{
+							"data": null,
+							"defaultContent": "<button type='button' class='btn btn-danger delete-person'><i class='fa fa-trash-o' aria-hidden='true'></i></button>" 
+					}
+			]
+	});
+
+	// edit personnel
+	$('#person-table tbody').on( 'click', '.edit-person', function () {
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+		
+			$.post(settings.urls.getperson, {id: $id}, function(data){	
+					$('#edit-first-name:text').val(data.first_name);
+					$('#edit-last-name:text').val(data.last_name);
+					$('#edit-job-position:text').val(data.job_position);
+					$('#edit-assigned-office').val(data.assigned_office);
+						$('#edit-form').parsley()           
+						.on('form:submit', function(e) {
+									$('#edit-personnel').modal('hide');             
+							var data = $('#edit-form').serializeArray();
+							data.push({name:'id', value:$id});
+							$.post(settings.urls.editperson, data, function(data2){
+											swal("Personnel", "Has been updated", "success")
+													.then((value) =>{
+															$('#edit-form').parsley().reset();
+															$('#edit-form')[0].reset();
+															var $data = {
+																					"id": $id,
+																					"first_name": data2.first_name,
+																					"last_name": data2.last_name,
+																					"assigned_office": data2.assigned_office
+															};
+															table.row($row).data($data).draw();                                          
+													}); 
+							},"json");
+							return false;
+						});           
+			},"json");
+	})
+	.on('click','.delete-person', function(){
+			var $row = $(this).closest('tr');
+			var $id = $row.find('td:first').text();
+
+			swal({
+				title: "Delete Personnel?",
+				text: "Once deleted, you will not be able to recover this file!",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					$.post(settings.urls.deleteperson, {id: $id}, function(data){
+							table.row($row).remove().draw();
+							swal(data , {
+								icon: "success",
+							});             
+					});
+				}
+			});
+	});
+
+	//clear create form
+	$('#create-personnel').on('hidden.bs.modal', function (e) {
+			$('#create-form').parsley().reset();
+			$('#create-form')[0].reset();
+	});
+	//clear edit form
+	$('#edit-personnel').on('hidden.bs.modal', function (e) {
+			$('#edit-form').parsley().reset();
+			$('#edit-form')[0].reset();
+	}); 
+
+		// validate create person
+	$('#create-form').parsley()
+	.on('form:submit', function(e) {
+		$('#create-personnel').modal('hide');   
+		$.post( settings.urls.createperson, $('#create-form').serialize(), function(data){  
+				swal("Personnel", "Has been created", "success")
+						.then((value) =>{
+								$('#person-table').DataTable().row.add({
+										"id" : data.id,
+										"first_name": data.first_name,
+										"last_name": data.last_name,
+										"assigned_office": data.assigned_office
+								}).draw();
+						});                     
+		}, "json");
+		return false;
+	});
+});
+</script>
+{% endblock %}

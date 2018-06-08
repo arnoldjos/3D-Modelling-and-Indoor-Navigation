@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>Admin</title>
+    <link href=" {{ url_for('static', filename='css/bootstrap.min.css') }} " rel="stylesheet">  
+    <link href=" {{ url_for('static', filename='css/font-awesome.min.css') }} " rel="stylesheet">		
+  </head>
+  <body>
+      <div class="container">
+      	<div class="row">
+      		<div class="col mt-5">
+						<div class="card w-50 mx-auto mt-5">
+							<div class="card-header bg-primary text-white">
+								<h4 class="text-center text-white">LOGIN</h4>
+							</div>
+							<div class="card-body">
+								<form action="" method="POST">
+									{{ form.csrf_token }}        	
+									<div class="row">
+										<div class="col-md-12 mx-auto" style="padding-top:3rem;">
+											{% if error %}
+											<p style="color:red; text-align: center;">{{ error }}</p>
+											{% endif %}
+										</div>
+									</div>        	
+									<div class="row">
+										<div class="col-md-10 mx-auto" style="padding-top:1rem;">
+											{{ form.username(class_="form-control", size=32, placeholder="Username") }}
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-10 mx-auto" style="padding-top:2rem;">
+											{{ form.password(class_="form-control", size=32, placeholder="Password") }}
+										</div>
+									</div>
+									<div class="row" style="margin-bottom:3rem;">
+										<div class="col-md-10 mx-auto" style="padding-top:1rem ;">
+											{{ form.submit(class_="btn btn-primary btn-block") }}
+										</div>
+									</div>  
+								</form>								
+							</div>
+						</div>      			
+      		</div>
+      	</div>   
+      </div>
+  </body>	    	  		
+</html>
