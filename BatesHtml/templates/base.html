@@ -1,48 +1,48 @@
 <html>
-  <head>    	
-    <link href=" {{ url_for('static', filename='css/bootstrap.min.css') }} " rel="stylesheet">
-    <link href=" {{ url_for('static', filename='css/font-awesome.min.css') }} " rel="stylesheet">
-    <link href=" {{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }} " rel="stylesheet">
-    <link href=" {{ url_for('static', filename='css/parsley.css') }} " rel="stylesheet">    	
-  	<title>Admin</title>
-  </head>
-	<body style="background: #293a46;">
-		<section class="rounded">
-	    <div class="container-fluid rounded" style="padding: 8rem;">
-	    	<div class="row">
-	    		<!--Navbar-->
-	    		<div class="col-xl-2 mb-md-5 mb-sm-5">
-						<div class="list-group">
-							<nav>
-							  <a href="{{ url_for('adminhome') }}" class="list-group-item list-group-item-action list-group-item-dark">DashBoard</a>
-							  <a href="{{ url_for('adminrooms') }}" class="list-group-item list-group-item-action list-group-item-dark">Rooms</a>
-							  <a href="{{ url_for('adminpersonnel', operation='view') }}" class="list-group-item list-group-item-action list-group-item-dark">Personnel</a>
-							  <a href="{{ url_for('admincolleges', operation='view') }}" class="list-group-item list-group-item-action list-group-item-dark">Colleges</a>
-							  <a href="{{ url_for('adminservices', operation='view') }}" class="list-group-item list-group-item-action list-group-item-dark">Services</a>
-							  <a href="{{ url_for('logoutadmin') }}" class="list-group-item list-group-item-action list-group-item-dark">Logout</a>
-							</nav>
-						</div>      			
-					</div>     		
-					<div class="col-xl-10">									   		
-			      {% block content %}
-			      {% endblock %}
-		    	</div>
-	    	</div>		      	
-	    </div>
-	  </section>
+
+<head>
+	<link href=" {{ url_for('static', filename='css/bootstrap.min.css') }} " rel="stylesheet">
+	<link href=" {{ url_for('static', filename='css/font-awesome.min.css') }} " rel="stylesheet">
+	<link href=" {{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }} " rel="stylesheet">
+	<link href=" {{ url_for('static', filename='css/parsley.css') }} " rel="stylesheet">
+	<title>Admin</title>
+</head>
+
+<body style="background: #293a46;">
+	<section class="rounded">
+		<div class="container-fluid rounded" style="padding: 8rem;">
+			<div class="row">
+				<!--Navbar-->
+				<div class="col-xl-2 mb-md-5 mb-sm-5">
+					<div class="list-group">
+						<nav>
+							<a href="{{ url_for('adminhome') }}" class="list-group-item list-group-item-action list-group-item-dark">DashBoard</a>
+							<a href="{{ url_for('adminrooms') }}" class="list-group-item list-group-item-action list-group-item-dark">Rooms</a>
+							<a href="{{ url_for('adminpersonnel', operation='view') }}" class="list-group-item list-group-item-action list-group-item-dark">Personnel</a>
+							<a href="{{ url_for('admincolleges', operation='view') }}" class="list-group-item list-group-item-action list-group-item-dark">Colleges</a>
+							<a href="{{ url_for('adminservices', operation='view') }}" class="list-group-item list-group-item-action list-group-item-dark">Services</a>
+							<a href="{{ url_for('logoutadmin') }}" class="list-group-item list-group-item-action list-group-item-dark">Logout</a>
+						</nav>
+					</div>
+				</div>
+				<div class="col-xl-10">
+					{% block content %} {% endblock %}
+				</div>
+			</div>
+		</div>
+	</section>
 	<script type="text/javascript" src=" {{ url_for('static', filename='js/jquery-3.2.1.min.js') }} "></script>
-	<script type="text/javascript" src=" {{ url_for('static', filename='js/sweetalert.min.js') }} "></script>	
-	<script type="text/javascript" src=" {{ url_for('static', filename='js/bootstrap.min.js') }} "></script>	
+	<script type="text/javascript" src=" {{ url_for('static', filename='js/sweetalert.min.js') }} "></script>
+	<script type="text/javascript" src=" {{ url_for('static', filename='js/bootstrap.min.js') }} "></script>
 	<script type="text/javascript" src=" {{ url_for('static', filename='js/parsley.min.js') }} "></script>
 	<script type="text/javascript" src=" {{ url_for('static', filename='js/datatables.min.js') }} "></script>
-	<script type="text/javascript" src=" {{ url_for('static', filename='js/Chart.min.js') }} "></script> 
+	<script type="text/javascript" src=" {{ url_for('static', filename='js/Chart.min.js') }} "></script>
 	<script type="text/javascript">
-		$(document).ready(function(){
+		$(document).ready(function () {
 			var pathname = window.location.pathname;
-			$('nav > a[href="'+pathname+'"]').addClass('active');			
-	});
-	</script>	
-	{% block scripts %}
-	{% endblock %}
-	</body>	    	  		
+			$('nav > a[href="' + pathname + '"]').addClass('active-desktop');
+		});
+	</script> {% block scripts %} {% endblock %}
+</body>
+
 </html>
